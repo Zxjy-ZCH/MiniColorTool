@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>选色板颜色提取工具 By_追星践月</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .container {
+            background-color: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 800px;
+        }
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 2.2rem;
+        }
+        .subtitle {
+            color: #7f8c8d;
+            font-size: 1.1rem;
+        }
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+        .color-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        #colorPicker {
+            width: 80px;
+            height: 80px;
+            cursor: pointer;
+            border: 3px solid #ddd;
+            border-radius: 10px;
+            padding: 0;
+            margin-bottom: 20px;
+        }
+        .color-display {
+            width: 150px;
+            height: 150px;
+            border-radius: 10px;
+            border: 3px solid #ddd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+            font-size: 1.2rem;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        .options-section {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .option-group {
+            margin-bottom: 25px;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+        .option-title {
+            font-size: 1.2rem;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #3498db;
+        }
+        .radio-container {
+            display: flex;
+            align-items: center;
+            margin: 12px 0;
+        }
+        input[type="radio"] {
+            width: 20px;
+            height: 20px;
+            margin-right: 12px;
+            cursor: pointer;
+            accent-color: #3498db;
+        }
+        label {
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 1.1rem;
+            color: #34495e;
+        }
+        .results {
+            margin-top: 30px;
+            background: linear-gradient(to right, #3498db, #2c3e50);
+            border-radius: 10px;
+            padding: 25px;
+            color: white;
+        }
+        .result-title {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 1.4rem;
+        }
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 15px;
+            background-color: rgba(255, 255, 255, 0.15);
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        .result-item:hover {
+            background-color: rgba(255, 255, 255, 0.25);
+            transform: translateY(-3px);
+        }
+        .result-label {
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+        .result-value {
+            font-family: 'Courier New', monospace;
+            font-size: 1.3rem;
+            font-weight: bold;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 8px 15px;
+            border-radius: 6px;
+            border: 1px dashed rgba(255, 255, 255, 0.3);
+            min-width: 200px;
+            text-align: center;
+        }
+        .instructions {
+            margin-top: 30px;
+            padding: 25px;
+            background-color: #e7f4ff;
+            border-radius: 10px;
+            font-size: 1rem;
+            border-left: 5px solid #3498db;
+        }
+        .instructions h3 {
+            margin-bottom: 15px;
+            color: #2980b9;
+            font-size: 1.3rem;
+        }
+        .instructions ul {
+            padding-left: 20px;
+        }
+        .instructions li {
+            margin-bottom: 10px;
+            line-height: 1.5;
+        }
+        .highlight {
+            background-color: #fff8e1;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-weight: bold;
+            color: #e74c3c;
+        }
+        .blink {
+            animation: blink 1.5s infinite;
+        }
+        .quick-blink {
+            animation: quick-blink 0.7s infinite;
+        }
+        @keyframes blink {
+            0% { opacity: 1; }
+            50% { opacity: 0.4; }
+            100% { opacity: 1; }
+        }
+        @keyframes quick-blink {
+            0% { opacity: 1; }
+            50% { opacity: 0.2; }
+            100% { opacity: 1; }
+        }
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            color: #ecf0f1;
+            font-size: 1rem;
+        }
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>选色板颜色提取工具 By_追星践月</h1>
+            <p class="subtitle">没有加\n因为我也不知道你们要在哪里加</p>
+        </header>
+        
+        <div class="main-content">
+            <div class="color-section">
+                <input type="color" id="colorPicker" value="#ff0000">
+                <div class="color-display" id="colorDisplay">当前颜色</div>
+            </div>
+            
+            <div class="options-section">
+                <div class="option-group">
+                    <h3 class="option-title">效果选项</h3>
+                    <div class="radio-container">
+                        <input type="radio" id="noEffect" name="effect" checked>
+                        <label for="noEffect">无效果</label>
+                    </div>
+                    <div class="radio-container">
+                        <input type="radio" id="blinkRadio" name="effect">
+                        <label for="blinkRadio">闪烁效果</label>
+                    </div>
+                    <div class="radio-container">
+                        <input type="radio" id="quickBlinkRadio" name="effect">
+                        <label for="quickBlinkRadio">快闪效果</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="results">
+            <h3 class="result-title">生成结果</h3>
+            <div class="result-item">
+                <span class="result-label">颜色文本：</span>
+                <span class="result-value" id="hexValue">#cFF0000</span>
+            </div>
+            <div class="result-item">
+                <span class="result-label">RGB值：</span>
+                <span class="result-value" id="rgbValue">rgb(255, 0, 0)</span>
+            </div>
+        </div>
+        
+        <div class="instructions">
+            <h3>使用说明</h3>
+            <ul>
+                <li>点击颜色选择器选取颜色，右侧将实时显示选中的颜色</li>
+                <li>生成的颜色值格式示例：
+                    <ul>
+                        <li>无效果：<span class="highlight">#cF4b222</span></li>
+                        <li>闪烁效果：<span class="highlight">#cF4b222#b</span></li>
+                        <li>快闪效果：<span class="highlight">#cF4b222#b2</span></li>
+                        <li>如果需要竖名请在你的实际名字上(实际名字是指如果你的名字为#cF4b222#b毒妇的话那么你的实际名字为"毒妇",意思就是你想要的名字)的除了第一个字的前面,后面的字的前面都加"\n"</li>
+                        <li>竖名示例：未改之前：#cF4b222#b毒妇 改成竖名：#cF4b222#b毒\n妇 示范2：未改之前：#cF4b222#b江南雨 改成竖名：#cF4b222#b江\n南\n雨</li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+        
+        <footer>
+            <p>© 2025 选色板颜色提取工具 By_追星践月</p>
+        </footer>
+    </div>
+
+    <script>
+        const colorPicker = document.getElementById('colorPicker');
+        const colorDisplay = document.getElementById('colorDisplay');
+        const hexValue = document.getElementById('hexValue');
+        const rgbValue = document.getElementById('rgbValue');
+        const noEffectRadio = document.getElementById('noEffect');
+        const blinkRadio = document.getElementById('blinkRadio');
+        const quickBlinkRadio = document.getElementById('quickBlinkRadio');
+        
+        updateColorDisplay(colorPicker.value);
+        
+        colorPicker.addEventListener('input', function() {
+            updateColorDisplay(this.value);
+        });
+        
+        noEffectRadio.addEventListener('change', function() {
+            updateColorDisplay(colorPicker.value);
+            updateAnimation();
+        });
+        
+        blinkRadio.addEventListener('change', function() {
+            updateColorDisplay(colorPicker.value);
+            updateAnimation();
+        });
+        
+        quickBlinkRadio.addEventListener('change', function() {
+            updateColorDisplay(colorPicker.value);
+            updateAnimation();
+        });
+        
+        function updateAnimation() {
+            hexValue.classList.remove('blink', 'quick-blink');
+            
+            if (blinkRadio.checked) {
+                hexValue.classList.add('blink');
+            } else if (quickBlinkRadio.checked) {
+                hexValue.classList.add('quick-blink');
+            }
+        }
+        
+        function updateColorDisplay(color) {
+            colorDisplay.style.backgroundColor = color;
+            
+            const r = parseInt(color.substr(1, 2), 16);
+            const g = parseInt(color.substr(3, 2), 16);
+            const b = parseInt(color.substr(5, 2), 16);
+            const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+            colorDisplay.style.color = brightness > 128 ? 'black' : 'white';
+            
+            const hex = color.substr(1).toUpperCase();
+            
+            let finalHex = '#c' + hex;
+            
+            if (blinkRadio.checked) {
+                finalHex += '#b';
+            } else if (quickBlinkRadio.checked) {
+                finalHex += '#b2';
+            }
+            
+            hexValue.textContent = finalHex;
+            rgbValue.textContent = `rgb(${r}, ${g}, ${b})`;
+            
+            updateAnimation();
+        }
+    </script>
+</body>
+</html>
